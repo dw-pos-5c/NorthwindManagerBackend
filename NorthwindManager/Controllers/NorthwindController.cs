@@ -6,32 +6,69 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 
+using NorthwindManager.Services;
+
 namespace NorthwindManager.Controllers
 {
-  [Route("[controller]")]
-  [ApiController]
-  public class NorthwindController : ControllerBase
-  {
-    private readonly NorthwindManagerContext db;
-
-    public NorthwindController(NorthwindManagerContext db)
+    [Route("[controller]")]
+    [ApiController]
+    public class NorthwindController : ControllerBase
     {
-      this.db = db;
-    }
+        private readonly NorthwindService northwindService;
 
-    [HttpGet("GetProducts")]
-    public object GetProducts()
-    {
-      try
-      {
-        int nr = db.Products.Count();
-        return new { IsOk = true, Nr = nr };
-      }
-      catch (Exception exc)
-      {
-        return new { IsOk = false, Nr = -1, Error = exc.Message };
-      }
-    }
+        public NorthwindController(NorthwindService northwindService)
+        {
+            this.northwindService = northwindService;
+        }
 
-  }
+        [HttpGet("Customers")]
+        public IActionResult GetCustomers()
+        {
+            return Ok(northwindService.AllCustomers().Select(x => new CustomerDto{
+                Id = x.CustomerId,
+                City = x.City,
+                CompanyName = x.CompanyName,
+                ContactName = x.ContactName,
+                Country = x.Country,
+            }));
+        }
+
+
+        [HttpGet("Employees")]
+        public IActionResult GetEmployees()
+        {
+            return Ok(northwindService.AllEmployees().Select(x => new EmployeeDto()
+            {
+                Id = x.EmployeeId,
+                City = x.City,
+                Country = x.Country,
+                Name = $"{x.FirstName} {x.LastName}",
+            }));
+        }
+
+        [HttpGet("Orders/{id}")]
+        public IActionResult GetOrders(string id)
+        {
+            return Ok(northwindService.GetOrdersFromCustomer(id).Select(x => new OrderDto
+            {
+                Id = x.OrderId,
+                NrOrderDetails = x.OrderDetails.Count,
+                OrderDate = x.OrderDate,
+                RequiredDate = x.RequiredDate,
+                ShippedDate = x.ShippedDate,
+            }));
+        }
+
+        [HttpGet("Orders/{id}")]
+        public IActionResult GetOrders(int id)
+        {
+            return Ok(northwindService.GetOrdersFromEmployee(id).Select(x => new OrderDto {
+                Id = x.OrderId,
+                NrOrderDetails = x.OrderDetails.Count,
+                OrderDate = x.OrderDate,
+                RequiredDate = x.RequiredDate,
+                ShippedDate = x.ShippedDate,
+            }));
+        }
+    }
 }
