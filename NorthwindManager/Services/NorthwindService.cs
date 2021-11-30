@@ -31,13 +31,17 @@ namespace NorthwindManager.Services
 
         public List<Order> GetOrdersFromCustomer(string id)
         {
-            return db.Orders.Where(x => x.CustomerId.Equals(id)).ToList();
+            return db.Orders.Include(x => x.OrderDetails).Where(x => x.CustomerId.Equals(id)).ToList();
         }
 
         public List<Order> GetOrdersFromEmployee(int id)
         {
-            return db.Orders.Where(x => x.EmployeeId == id).ToList();
+            return db.Orders.Include(x => x.OrderDetails).Where(x => x.EmployeeId == id).ToList();
         }
-       
+
+        public List<OrderDetail> GetOrderDetailsFromOrder(int id)
+        {
+            return db.OrderDetails.Include(x => x.Product).Where(x => x.OrderId == id).ToList();
+        }
     }
 }

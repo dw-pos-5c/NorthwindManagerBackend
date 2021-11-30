@@ -46,7 +46,7 @@ namespace NorthwindManager.Controllers
             }));
         }
 
-        [HttpGet("Orders/{id}")]
+        [HttpGet("OrdersFromCustomer/{id}")]
         public IActionResult GetOrders(string id)
         {
             return Ok(northwindService.GetOrdersFromCustomer(id).Select(x => new OrderDto
@@ -59,7 +59,7 @@ namespace NorthwindManager.Controllers
             }));
         }
 
-        [HttpGet("Orders/{id}")]
+        [HttpGet("OrdersFromEmployee/{id}")]
         public IActionResult GetOrders(int id)
         {
             return Ok(northwindService.GetOrdersFromEmployee(id).Select(x => new OrderDto {
@@ -68,6 +68,18 @@ namespace NorthwindManager.Controllers
                 OrderDate = x.OrderDate,
                 RequiredDate = x.RequiredDate,
                 ShippedDate = x.ShippedDate,
+            }));
+        }
+
+        [HttpGet("OrderDetails/{id}")]
+        public IActionResult GetOrderDetails(int id)
+        {
+            return Ok(northwindService.GetOrderDetailsFromOrder(id).Select(x => new OrderDetailsDto
+            {
+                OrderId = x.OrderId,
+                ProductName = x.Product.ProductName,
+                Quantity = x.Quantity,
+                UnitPrice = x.UnitPrice,
             }));
         }
     }
